@@ -3,11 +3,28 @@ import sqlite3
 con = sqlite3.connect("smartreorder.db")
 cur = con.cursor()
 
-# Remove current data
+cur.executescript("""
+CREATE TABLE IF NOT EXISTS product (
+    product_id TEXT PRIMARY KEY,
+    product_name TEXT,
+    avg_daily_sales REAL,
+    on_hand_qty INTEGER,
+    safety_stock INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS supplier (
+    supplier_id TEXT PRIMARY KEY,
+    supplier_name TEXT,
+    unit_price REAL,
+    lead_time_days INTEGER,
+    reliability REAL,
+    shipping_mode TEXT
+);
+""")
+
 cur.execute("DELETE FROM product")
 cur.execute("DELETE FROM supplier")
 
-# Insert rainfall scenario data
 cur.executemany("INSERT INTO product VALUES (?,?,?,?,?)", [
     ("P1", "Bottled Water", 160, 250, 80),
     ("P2", "Cola",          700, 250, 100),
